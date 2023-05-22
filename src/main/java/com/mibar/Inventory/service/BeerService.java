@@ -14,4 +14,6 @@ public interface BeerService {
 
     //Create a method that returns a beer by ID
     public Beer getBeerById(UUID id);
+
+    Beer saveNewBeer(Beer beer);
 }
