@@ -2,7 +2,7 @@ package com.mibar.Inventory.controller;
 
 import com.mibar.Inventory.model.Beer;
 import com.mibar.Inventory.service.BeerService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/beer")
 public class BeerController {
     private final BeerService beerService;
@@ -60,12 +60,14 @@ public class BeerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+//    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<Beer> listBeers() {
         return beerService.listBeers();
     }
 
-    @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
+//    @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
+    @GetMapping("{beerId}")
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id");
         return beerService.getBeerById(beerId);
