@@ -2,6 +2,7 @@ package com.mibar.Inventory.service;
 
 import com.mibar.Inventory.model.Customer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -53,5 +54,39 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<Customer> getAllCustomers() {
         return new ArrayList<>(customerMap.values());
+    }
+
+    @Override
+    public Customer saveNewCustomer(Customer customer) {
+        Customer savedCustomer = Customer.builder()
+                .name(customer.getName())
+                .version(customer.getVersion())
+                .id(UUID.randomUUID())
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+
+        customerMap.put(savedCustomer.getId(), savedCustomer);
+
+        return savedCustomer;
+    }
+
+    @Override
+    public void updateCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customerMap.get(customerId);
+        existing.setName(customer.getName());
+    }
+
+    @Override
+    public void removeCustomerById(UUID customerId) {
+        customerMap.remove(customerId);
+    }
+
+    @Override
+    public void patchCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customerMap.get(customerId);
+        if (StringUtils.hasText(customer.getName())) {
+            existing.setName(customer.getName());
+        }
     }
 }
