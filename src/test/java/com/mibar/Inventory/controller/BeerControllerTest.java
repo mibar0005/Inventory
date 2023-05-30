@@ -6,14 +6,19 @@ import com.mibar.Inventory.service.BeerService;
 import com.mibar.Inventory.service.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -46,11 +51,67 @@ class BeerControllerTest {
     //We can set up Mockito to return back data
     BeerServiceImpl beerServiceImpl;
 
+    //Refactor the ArgumentCapture and declare it as a field here rather than inside of a method.
+    //Use the @Captor bean
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    //Create a Captor for the Beer object as well, this will give us a reusable component
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
+
     //Create a @BeforeEach method and initialize the BeerServiceImpl since we will be
     //manipulating this in upcoming tests
     @BeforeEach
     void setUp() {
         beerServiceImpl = new BeerServiceImpl();
+    }
+
+
+    @Test
+    void testPatchBeerById() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        //We can create a Map<String, Object> and we can put the key (JSON property) and the value
+        //This mimics what the client would do
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "New Name");
+
+        //We can write out mockMvc properties
+        mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isNoContent());
+
+        //Write a verify method that will take in the Captors of uuid and beer
+        verify(beerService).patchBeerById(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
+    }
+
+
+    //For the delete method we will also be using a verify() method
+    //We will also be using ArgumentCaptors to capture a property
+    @Test
+    void testDeleteBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        //We want to make sure that the beer.getId() property that we are getting is being parsed
+        //and sent into the deleteById() method on Beer service.
+        // {Refactored in the Field Declaration Above!!!}
+        //ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        //We use the capture() method to capture everything that is being passed here
+        verify(beerService).deleteById(uuidArgumentCaptor.capture());
+
+        //We can then use an Assertion  to make sure that the beerId is Equals to the value being
+        //of the uuidArgumentCaptor.capture() value
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
     }
 
 
@@ -63,9 +124,9 @@ class BeerControllerTest {
 
         //we do not have a given(), so we can just get straight to the mocking
         mockMvc.perform(put("/api/v1/beer/" + beer.getId())
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(beer)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
                 .andExpect(status().isNoContent());
 
         //We want to verify the interaction. We want to verify that this has one interaction
@@ -92,13 +153,12 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         mockMvc.perform(post("/api/v1/beer")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
     }
-
 
 
     @Test
@@ -114,7 +174,7 @@ class BeerControllerTest {
         //Explanation: We are telling MockMvc that we want to perform a GET against the urlTemplate
         //and we should get back an Ok status
         mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 //Here we are expecting a response of type JSOn
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -132,7 +192,7 @@ class BeerControllerTest {
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
         //We can then perform a mockMvc and perform a GET request against our url
         mockMvc.perform(get("/api/v1/beer")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 //Make an assertion using json path that this list will be at least of size 3
                 .andExpect(jsonPath("$.length()", is(3)));
