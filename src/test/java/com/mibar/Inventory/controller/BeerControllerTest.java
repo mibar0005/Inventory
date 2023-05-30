@@ -78,7 +78,8 @@ class BeerControllerTest {
         beerMap.put("beerName", "New Name");
 
         //We can write out mockMvc properties
-        mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+        //Instead of manually writing the urlTemplate we can call the BeerController and bring in the BEER_PATH
+        mockMvc.perform(patch(BeerController.BEER_PATH + "/" + beer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
@@ -98,7 +99,9 @@ class BeerControllerTest {
     void testDeleteBeer() throws Exception {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
-        mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
+        //We are going to refactor from BeerController.BEER_PATH + "/" + beer.getId() to...
+        //BeerController.BEER_PATH_ID, beer.getId();  --> URI properties
+        mockMvc.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -123,7 +126,7 @@ class BeerControllerTest {
         Beer beer = beerServiceImpl.listBeers().get(0);
 
         //we do not have a given(), so we can just get straight to the mocking
-        mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+        mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -152,7 +155,7 @@ class BeerControllerTest {
 
         given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
-        mockMvc.perform(post("/api/v1/beer")
+        mockMvc.perform(post(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -173,7 +176,7 @@ class BeerControllerTest {
         //You may have to look the get() for MockMvcRequestBuilders or import it manually
         //Explanation: We are telling MockMvc that we want to perform a GET against the urlTemplate
         //and we should get back an Ok status
-        mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
+        mockMvc.perform(get(BeerController.BEER_PATH_ID, testBeer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 //Here we are expecting a response of type JSOn
@@ -191,7 +194,7 @@ class BeerControllerTest {
         //Work with mockito to return a list of beers
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
         //We can then perform a mockMvc and perform a GET request against our url
-        mockMvc.perform(get("/api/v1/beer")
+        mockMvc.perform(get(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 //Make an assertion using json path that this list will be at least of size 3

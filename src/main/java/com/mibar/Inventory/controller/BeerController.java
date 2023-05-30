@@ -15,15 +15,22 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/beer")
+//@RequestMapping("/api/v1/beer")   --> Replaced when we created the constants for BEER_PATH and BEER_PATH_ID
 public class BeerController {
-    private final BeerService beerService;
 
+    //Create a Constant variable for the beer path "/api/v1/beer"
+    //Make sure they are public
+    public static final String BEER_PATH = "/api/v1/beer";
+
+    //Create a Constant variable for the beer path with a beerId
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+
+    private final BeerService beerService;
 
     //Create a Patch method that updates part of an object
     //This should return a ResponseEntity of No Content
     //Use the @PathVariable and @RequestBody annotations
-    @PatchMapping("{beerId}")
+    @PatchMapping(BEER_PATH_ID)
     public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
         beerService.patchBeerById(beerId, beer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -31,7 +38,7 @@ public class BeerController {
 
     //Create a delete method that searched for a beer by Id and removes it
     //This method should return a ResponseEntity
-    @DeleteMapping("{beerId}")
+    @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity deleteById(@PathVariable("beerId") UUID beerId) {
         beerService.deleteById(beerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -39,7 +46,7 @@ public class BeerController {
 
     //Create a Put method that returns a ResponseEntity
     //Pass in the beerId and the beer object
-    @PutMapping("{beerId}")
+    @PutMapping(BEER_PATH_ID)
     public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
         beerService.updateBeerById(beerId, beer);
         //return a ResponseEntity of no content
@@ -49,7 +56,7 @@ public class BeerController {
 
     //Create a POST method that takes in a Beer object and returns a ResponseEntity
 //    @RequestMapping(method = RequestMethod.POST)
-    @PostMapping
+    @PostMapping(BEER_PATH)
     public ResponseEntity handlePost(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveNewBeer(beer);
 
@@ -61,13 +68,13 @@ public class BeerController {
     }
 
 //    @RequestMapping(method = RequestMethod.GET)
-    @GetMapping
+    @GetMapping(BEER_PATH)
     public List<Beer> listBeers() {
         return beerService.listBeers();
     }
 
 //    @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
-    @GetMapping("{beerId}")
+    @GetMapping(BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id");
         return beerService.getBeerById(beerId);
