@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -168,7 +169,8 @@ class BeerControllerTest {
     @Test
     void getBeerByIdNotFound_ExceptionHandling() throws Exception {
         //Set up out given() method with any() UUID, will throw NotFoundException class
-        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        //With an Optional it WillReturn Optional.empty()
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
         //Create a mockMvc get method with the call the beerController with the
         //BEER_PATH_ID and a random UUID. You should expect a status of isNotFound
@@ -185,8 +187,9 @@ class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
         //use the given() to tell mockito that when give any beer with any id will return the test beer
-        //In this line we are configuring mockito to go ahead and return that test beer object
-        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
+        //In this line we are configuring mockito to go ahead and return that test beer object.
+        //If we are using the Optional, we need to wrap the testBeer inside an Optional.of()
+        given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));
 
         //You may have to look the get() for MockMvcRequestBuilders or import it manually
         //Explanation: We are telling MockMvc that we want to perform a GET against the urlTemplate

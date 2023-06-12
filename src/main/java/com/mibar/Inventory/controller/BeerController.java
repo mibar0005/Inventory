@@ -78,7 +78,9 @@ public class BeerController {
     @GetMapping(BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id");
-        return beerService.getBeerById(beerId);
+        //This is where we will change the service. We can use an
+        // orElseThrow(NotFoundException::new)
+        return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
     }
 
 }
