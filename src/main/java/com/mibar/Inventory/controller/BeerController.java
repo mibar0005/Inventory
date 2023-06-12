@@ -73,6 +73,17 @@ public class BeerController {
         return beerService.listBeers();
     }
 
+
+    //Create a method that returns a ResponseEntity for handleNotFoundException.
+    //To have this handled by the framework, We can annotate it with @ExceptionHandler
+    //If there is an exception in the controller it will be handled by this method
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException() {
+        //Return a new ResponseEntity (use a builder for this)
+        return ResponseEntity.notFound().build();
+    }
+
+
 //    @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
     @GetMapping(BEER_PATH_ID)
     public Beer getBeerById(@PathVariable("beerId") UUID beerId) {

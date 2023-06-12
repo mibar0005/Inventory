@@ -163,6 +163,21 @@ class BeerControllerTest {
                 .andExpect(header().exists("Location"));
     }
 
+    //We are going to create a test that throws and exception with Mockito.
+    //Create a method that tests for when a get beer by id is not found
+    @Test
+    void getBeerByIdNotFound() throws Exception {
+        //Set up out given() method with any() UUID, will throw NotFoundException class
+        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        //Create a mockMvc get method with the call the beerController with the
+        //BEER_PATH_ID and a random UUID. You should expect a status of isNotFound
+        mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+
+    }
+
+
 
     @Test
     void getBeerById() throws Exception {
