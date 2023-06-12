@@ -166,7 +166,7 @@ class BeerControllerTest {
     //We are going to create a test that throws and exception with Mockito.
     //Create a method that tests for when a get beer by id is not found
     @Test
-    void getBeerByIdNotFound() throws Exception {
+    void getBeerByIdNotFound_ExceptionHandling() throws Exception {
         //Set up out given() method with any() UUID, will throw NotFoundException class
         given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
 

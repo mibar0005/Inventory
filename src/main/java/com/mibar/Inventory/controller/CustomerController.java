@@ -40,6 +40,12 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
+//    @ExceptionHandler(NotFoundException.class)
+//    public ResponseEntity getCustomerByIdNotFound() {
+//        return ResponseEntity.notFound().build();
+//    }
+
+
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
         customerService.updateCustomerById(customerId, customer);
