@@ -1,6 +1,6 @@
 package com.mibar.Inventory.service;
 
-import com.mibar.Inventory.model.Beer;
+import com.mibar.Inventory.model.BeerDTO;
 import com.mibar.Inventory.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.*;
 public class BeerServiceImpl implements BeerService {
 
     //Create a Map and to store the UUID and Beer name.
-    public Map<UUID, Beer> beerMap;
+    public Map<UUID, BeerDTO> beerMap;
 
     //Since we are not currently working with a database, we will be creating a three beer
     //instances in here.
@@ -24,7 +24,7 @@ public class BeerServiceImpl implements BeerService {
         this.beerMap = new HashMap<>();
 
         //Create three beer instances
-        Beer beer1 = Beer.builder()
+        BeerDTO beer1 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("Galaxy Cat")
@@ -36,7 +36,7 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        Beer beer2 = Beer.builder()
+        BeerDTO beer2 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("Riverside Rachets")
@@ -48,7 +48,7 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        Beer beer3 = Beer.builder()
+        BeerDTO beer3 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("The Can Can")
@@ -69,13 +69,13 @@ public class BeerServiceImpl implements BeerService {
 
     //Create a method that will return a list of all beers
     @Override
-    public List<Beer> listBeers() {
+    public List<BeerDTO> listBeers() {
         //Use the Map method in order to retrieve all values
         return new ArrayList<>(beerMap.values());
     }
 
     @Override
-    public Optional<Beer> getBeerById(UUID id) {
+    public Optional<BeerDTO> getBeerById(UUID id) {
 
         log.debug("Get Beer by Id - in service. Id: " + id.toString());
         //Use the Map method's in order to get Beer object by passing in the id (Key) value
@@ -86,9 +86,9 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer saveNewBeer(Beer beer) {
+    public BeerDTO saveNewBeer(BeerDTO beer) {
 
-        Beer savedBeer = Beer.builder()
+        BeerDTO savedBeer = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
@@ -106,8 +106,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void updateBeerById(UUID beerId, Beer beer) {
-        Beer existing = beerMap.get(beerId);
+    public void updateBeerById(UUID beerId, BeerDTO beer) {
+        BeerDTO existing = beerMap.get(beerId);
         existing.setBeerName(beer.getBeerName());
         existing.setPrice(beer.getPrice());
         existing.setUpc(beer.getUpc());
@@ -123,8 +123,8 @@ public class BeerServiceImpl implements BeerService {
     //The rule of thumb when doing a Patch is....
     //If the property is null, then you don't do an update
     @Override
-    public void patchBeerById(UUID beerId, Beer beer) {
-        Beer existing = beerMap.get(beerId);
+    public void patchBeerById(UUID beerId, BeerDTO beer) {
+        BeerDTO existing = beerMap.get(beerId);
 
         if (StringUtils.hasText(beer.getBeerName())) {
             existing.setBeerName(beer.getBeerName());

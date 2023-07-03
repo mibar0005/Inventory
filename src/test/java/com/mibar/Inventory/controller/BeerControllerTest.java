@@ -1,7 +1,7 @@
 package com.mibar.Inventory.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mibar.Inventory.model.Beer;
+import com.mibar.Inventory.model.BeerDTO;
 import com.mibar.Inventory.service.BeerService;
 import com.mibar.Inventory.service.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ class BeerControllerTest {
 
     //Create a Captor for the Beer object as well, this will give us a reusable component
     @Captor
-    ArgumentCaptor<Beer> beerArgumentCaptor;
+    ArgumentCaptor<BeerDTO> beerArgumentCaptor;
 
     //Create a @BeforeEach method and initialize the BeerServiceImpl since we will be
     //manipulating this in upcoming tests
@@ -71,7 +71,7 @@ class BeerControllerTest {
 
     @Test
     void testPatchBeerById() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         //We can create a Map<String, Object> and we can put the key (JSON property) and the value
         //This mimics what the client would do
@@ -98,7 +98,7 @@ class BeerControllerTest {
     //We will also be using ArgumentCaptors to capture a property
     @Test
     void testDeleteBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         //We are going to refactor from BeerController.BEER_PATH + "/" + beer.getId() to...
         //BeerController.BEER_PATH_ID, beer.getId();  --> URI properties
@@ -124,7 +124,7 @@ class BeerControllerTest {
     @Test
     void testUpdateBeer() throws Exception {
         //Grab the first beer of the map
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         //we do not have a given(), so we can just get straight to the mocking
         mockMvc.perform(put(BeerController.BEER_PATH_ID, beer.getId())
@@ -136,7 +136,7 @@ class BeerControllerTest {
         //We want to verify the interaction. We want to verify that this has one interaction
         //We want to verify that the beerService updateBeerById method is being called.
         //We can pass any() UUID. class and expect to return any() Beer.class
-        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+        verify(beerService).updateBeerById(any(UUID.class), any(BeerDTO.class));
 
     }
 
@@ -149,12 +149,12 @@ class BeerControllerTest {
         //in order to handle the DateTime type
 //        objectMapper.findAndRegisterModules();
         //Get the first beer from the listBeer()
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
         //The beer Object should not have a version property and an ID property
         beer.setVersion(null);
         beer.setId(null);
 
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().get(1));
 
         mockMvc.perform(post(BeerController.BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
@@ -184,7 +184,7 @@ class BeerControllerTest {
     @Test
     void getBeerById() throws Exception {
         //Create a new Beer by using the beerServiceImpl to grab a beer from the list
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         //use the given() to tell mockito that when give any beer with any id will return the test beer
         //In this line we are configuring mockito to go ahead and return that test beer object.

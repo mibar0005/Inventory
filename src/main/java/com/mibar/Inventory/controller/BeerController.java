@@ -1,6 +1,6 @@
 package com.mibar.Inventory.controller;
 
-import com.mibar.Inventory.model.Beer;
+import com.mibar.Inventory.model.BeerDTO;
 import com.mibar.Inventory.service.BeerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class BeerController {
     //This should return a ResponseEntity of No Content
     //Use the @PathVariable and @RequestBody annotations
     @PatchMapping(BEER_PATH_ID)
-    public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+    public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer) {
         beerService.patchBeerById(beerId, beer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -47,7 +47,7 @@ public class BeerController {
     //Create a Put method that returns a ResponseEntity
     //Pass in the beerId and the beer object
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beer) {
         beerService.updateBeerById(beerId, beer);
         //return a ResponseEntity of no content
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -57,8 +57,8 @@ public class BeerController {
     //Create a POST method that takes in a Beer object and returns a ResponseEntity
 //    @RequestMapping(method = RequestMethod.POST)
     @PostMapping(BEER_PATH)
-    public ResponseEntity handlePost(@RequestBody Beer beer) {
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity handlePost(@RequestBody BeerDTO beer) {
+        BeerDTO savedBeer = beerService.saveNewBeer(beer);
 
         //Create a header object that will return the Location of the newly created API
         HttpHeaders headers = new HttpHeaders();
@@ -69,14 +69,14 @@ public class BeerController {
 
 //    @RequestMapping(method = RequestMethod.GET)
     @GetMapping(BEER_PATH)
-    public List<Beer> listBeers() {
+    public List<BeerDTO> listBeers() {
         return beerService.listBeers();
     }
 
 
 //    @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
     @GetMapping(BEER_PATH_ID)
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId) {
+    public BeerDTO getBeerById(@PathVariable("beerId") UUID beerId) {
         log.debug("Get Beer by Id");
         //This is where we will change the service. We can use an
         // orElseThrow(NotFoundException::new)
